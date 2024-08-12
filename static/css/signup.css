@@ -56,6 +56,9 @@ button {
 
 button:hover {
     background-color: #0056b3;
+.error-class{
+    color: red !important;
+}
 }
 
 p {
@@ -71,7 +74,4 @@ p a {
 
 p a:hover {
     text-decoration: underline;
-}
-.error-class{
-    color: red !important;
 }
