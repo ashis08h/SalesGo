@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5x3z)0+3^3gbea55#ha7bj4semg@gz6@5#p*0$25jtas9-cu91'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['0.0.0.0']
 
@@ -121,9 +121,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+# ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
