@@ -8,7 +8,14 @@
             {{error}}
         {% endif %}
         </p>
-        <form method="post" action="/post/create/">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{% if message.tags %}{{ message.tags }}{% endif %} error-class">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="post" action="{% if post %}{% else %}/post/create/{% endif %}">
             {% csrf_token %}
             <div class="input-group">
                 <label for="title">Title:</label>
@@ -16,7 +23,7 @@
             </div>
             <div class="input-group">
                 <label for="body">Body:</label>
-                <textarea name="body" id="body" required maxlength="200">{% if body %}{{body}}{% endif %}{% if post and post.title %}{{post.title}}{% endif %}</textarea>
+                <textarea name="body" id="body" required maxlength="200">{% if body %}{{body}}{% endif %}{% if post and post.body %}{{post.body}}{% endif %}</textarea>
             </div>
             <button type="submit">{% if post %}Edit{% else %}Create{% endif %} Post</button>
         </form>

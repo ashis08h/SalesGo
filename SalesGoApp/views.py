@@ -8,6 +8,8 @@ from SalesGoApp.dao.postdao import PostDao
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Post
+from django.core.paginator import Paginator
+from django.conf import settings
 
 
 class LoginView(View):
@@ -35,7 +37,8 @@ class LoginView(View):
             return redirect('dashboard_view')  # Redirect to the home page on successful login
         else:
             # If authentication fails, return to the login page with an error message
-            return render(request, self.template_name, {'error': 'Invalid username or password'})
+            messages.error(request, 'Invalid username or password.')
+            return render(request, self.template_name)
 
 
 class SignUpView(View):
@@ -81,9 +84,10 @@ class SignUpView(View):
 
         user = RegisterUserDao().register_user(username, email, password1)
         if user:
+            messages.success(request, 'Successfully registered please login!')
             return redirect('login_view')
 
-        context['error'] = "An error occurred while creating your account."
+        messages.error(request, 'An error occurred while creating your account.')
         return render(request, self.template_name, context)
 
     def validate_mandatory_and_len_check(self, username, email, password1, password2):
@@ -164,33 +168,19 @@ class PostListView(View):
 
     def get(self, request):
         posts = PostDao().get_posts(request.user)
-        return render(request, 'posts.html', {'posts': posts, 'username': request.user})
+        paginator = Paginator(posts, settings.NO_OF_ROW_PER_PAGE)
+
+        page_number = request.GET.get('page')
+        page_objs = paginator.get_page(page_number)
+        return render(request, 'posts.html', {'page_objs': page_objs, 'username': request.user})
 
 
-class PostCreateView(View):
-    """
-    View to handle the creation of a new post.
-    """
-    template_name = 'post.html'
+class PostBaseClass:
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def __init__(self):
+        pass
 
-    def post(self, request):
-        title = request.POST.get('title')
-        body = request.POST.get('body')
-        context = {'title': title, 'body': body}
-        error = self.validate_post_data(title, body, request.user)
-        if error:
-            context['error'] = error
-            return render(request, self.template_name, context)
-        post = PostDao().create_post(title, body, request.user)
-        if post:
-            return redirect('posts_view')  # Redirect to the list of posts
-        context['error'] = "An error occurred while creating your post."
-        return render(request, self.template_name, context)
-
-    def validate_post_data(self, title, body, user):
+    def validate_post_data(self, title, body):
         if not title:
             error = "Title should not be empty."
             return error
@@ -203,26 +193,59 @@ class PostCreateView(View):
         if len(body.strip()) > 100:
             error = "Body should not be more than 100 characters."
             return error
-        post = PostDao().get_post_by_title(user, title)
-        if post:
-            error = "Title already exists."
-            return error
         return False
 
-class PostEditView(View):
+
+class PostCreateView(View, PostBaseClass):
+    """
+    View to handle the creation of a new post.
+    """
+    template_name = 'post.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {'username': request.user})
+
+    def post(self, request):
+        title = request.POST.get('title')
+        body = request.POST.get('body')
+        context = {'title': title, 'body': body, 'username': request.user}
+        error = super().validate_post_data(title, body)
+        if error:
+            context['error'] = error
+            return render(request, self.template_name, context)
+        post = PostDao().create_or_update_post(title, body, request.user)
+        if post:
+            return redirect('posts_view')  # Redirect to the list of posts
+        messages.error(request, 'An error occurred while creating your post.')
+        return render(request, self.template_name, context)
+
+
+class PostEditView(View, PostBaseClass):
     """
     View to handle editing an existing post.
     """
+    template_name = 'post.html'
+
     def get(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
-        return render(request, 'post.html', {'post': post})
+        return render(request, self.template_name, {'post': post, 'username': request.user})
 
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
-        post.title = request.POST.get('title')
-        post.body = request.POST.get('body')
-        post.save()
-        return redirect('posts_list')  # Redirect to the list of posts
+        title = request.POST.get('title')
+        body = request.POST.get('body')
+        context = {'username': request.user}
+        error = super().validate_post_data(title, body)
+        if error:
+            context['error'] = error
+            context['post'] = post
+            return render(request, self.template_name, context)
+        post = PostDao().create_or_update_post(title, body, request.user, pk)
+        if post:
+            return redirect('posts_view')  # Redirect to the list of posts
+        messages.error(request, 'An error occurred while updating your post.')
+        return render(request, self.template_name, context)
+
 
 class PostDeleteView(View):
     """

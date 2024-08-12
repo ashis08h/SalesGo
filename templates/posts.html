@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for post in posts %}
+                {% for post in page_objs %}
                 <tr>
                     <td>{{ post.title }}</td>
                     <td>{{ post.body }}</td>
@@ -35,5 +35,22 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_objs.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_objs.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_objs.number }} of {{ page_objs.paginator.num_pages }}.
+                </span>
+
+                {% if page_objs.has_next %}
+                    <a href="?page={{ page_objs.next_page_number }}">next</a>
+                    <a href="?page={{ page_objs.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
 </div>
 {% endblock %}

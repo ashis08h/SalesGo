@@ -7,11 +7,8 @@ class PostDao:
     This class provides method to perform CRUD operations on Post.
     """
 
-    def get_posts(self, user, post_id=None):
-        if post_id:
-            pass
-        else:
-            posts = Post.objects.filter(user=user)
+    def get_posts(self, user):
+        posts = Post.objects.filter(user=user)
         return posts
 
     def get_post_by_title(self, user, title):
@@ -21,9 +18,12 @@ class PostDao:
         except Post.DoesNotExist:
             return None
 
-    def create_post(self, title, body, user):
+    def create_or_update_post(self, title, body, user, post_id=None):
         try:
-            post = Post()
+            if post_id:
+                post = Post.objects.get(user=user, id=post_id)
+            else:
+                post = Post()
             post.title = title
             post.body = body
             post.user = user
@@ -31,3 +31,4 @@ class PostDao:
             return post
         except Exception as e:
             return None
+
