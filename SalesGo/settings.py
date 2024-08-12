@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5x3z)0+3^3gbea55#ha7bj4semg@gz6@5#p*0$25jtas9-cu91
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
@@ -129,4 +129,5 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 NO_OF_ROW_PER_PAGE = 10
