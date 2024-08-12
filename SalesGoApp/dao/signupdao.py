@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 class RegisterUserDao:
@@ -12,5 +13,4 @@ class RegisterUserDao:
             user.save()
             return user
         except Exception as e:
-            messages.error(self.request, f"An error occurred: {e}")
             return None

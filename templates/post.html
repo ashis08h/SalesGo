@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+        <h1>{% if post %}Edit a Post{% else %}Create a New Post{% endif %}</h1>
+        <p class="error-class">
+        {% if error %}
+            {{error}}
+        {% endif %}
+        </p>
+        <form method="post" action="/post/create/">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="title">Title:</label>
+                <input type="text" name="title" id="title" value="{% if title %}{{title}}{% endif %}{% if post and post.title %}{{post.title}}{% endif %}" maxlength="50" required>
+            </div>
+            <div class="input-group">
+                <label for="body">Body:</label>
+                <textarea name="body" id="body" required maxlength="200">{% if body %}{{body}}{% endif %}{% if post and post.title %}{{post.title}}{% endif %}</textarea>
+            </div>
+            <button type="submit">{% if post %}Edit{% else %}Create{% endif %} Post</button>
+        </form>
+    </div>
+{% endblock %}

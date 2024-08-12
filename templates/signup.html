@@ -11,27 +11,27 @@
     <div class="signup-container">
         <h1>Sign Up</h1>
         <p class="error-class">
-        {% if error and error.error %}
-            {{error.error}}
+        {% if error %}
+            {{error}}
         {% endif %}
         </p>
         <form method="post">
             {% csrf_token %}
             <div class="input-group">
                 <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required>
+                <input type="text" name="username" id="username" value="{% if username %}{{username}}{% endif %}" maxlength="20" required>
             </div>
             <div class="input-group">
                 <label for="email">Email:</label>
-                <input type="email" name="email" id="email" required>
+                <input type="email" name="email" id="email" value="{% if email %}{{email}}{% endif %}" maxlength="30" required>
             </div>
             <div class="input-group">
                 <label for="password1">Password:</label>
-                <input type="password" name="password1" id="password1" required>
+                <input type="password" name="password1" id="password1" maxlength="10" required>
             </div>
             <div class="input-group">
                 <label for="password2">Confirm Password:</label>
-                <input type="password" name="password2" id="password2" required>
+                <input type="password" name="password2" id="password2" maxlength="10" required>
             </div>
             <button type="submit">Sign Up</button>
         </form>
